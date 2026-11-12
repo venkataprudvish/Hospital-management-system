@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account · SecureCare{% endblock %}
+
+{% block page_context %}
+    <span class="eyebrow">ACCOUNT</span>
+    <strong>Create Account</strong>
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-card">
+
+    <div class="eyebrow">
+        ACCOUNT CREATION
+    </div>
+
+    <h1>
+        Create your account
+    </h1>
+
+    <p class="muted">
+        Register for SecureCare. New accounts begin with
+        the least-privileged Patient role.
+    </p>
+
+
+    {% if form.non_field_errors %}
+
+        <div class="alert error">
+
+            <span class="alert-icon">!</span>
+
+            <div>
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <form method="post" novalidate>
+
+        {% csrf_token %}
+
+        {% for field in form %}
+
+            <label>
+
+                <span>
+                    {{ field.label }}
+
+                    {% if field.field.required %}
+                        <span
+                            style="
+                                color:#c83b4d;
+                                margin-left:3px;
+                            "
+                        >
+                            *
+                        </span>
+                    {% endif %}
+                </span>
+
+
+                {{ field }}
+
+
+                {% if field.help_text %}
+
+                    <small
+                        class="muted"
+                        style="
+                            font-size:11px;
+                            font-weight:500;
+                            line-height:1.5;
+                        "
+                    >
+                        {{ field.help_text }}
+                    </small>
+
+                {% endif %}
+
+
+                {% for error in field.errors %}
+
+                    <span class="field-error">
+                        {{ error }}
+                    </span>
+
+                {% endfor %}
+
+            </label>
+
+        {% endfor %}
+
+
+        <button
+            class="primary"
+            type="submit"
+        >
+            Create account
+        </button>
+
+    </form>
+
+
+    <div
+        style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin:24px 0;
+        "
+    >
+
+        <div
+            style="
+                height:1px;
+                background:#e4eaf3;
+                flex:1;
+            "
+        ></div>
+
+        <span
+            style="
+                font-size:10px;
+                font-weight:900;
+                letter-spacing:.08em;
+                color:#8a96aa;
+            "
+        >
+            SECURECARE
+        </span>
+
+        <div
+            style="
+                height:1px;
+                background:#e4eaf3;
+                flex:1;
+            "
+        ></div>
+
+    </div>
+
+
+    <p
+        class="center"
+        style="margin-bottom:8px;"
+    >
+        Already have an account?
+
+        <a href="{% url 'login' %}">
+            Sign in
+        </a>
+    </p>
+
+
+    <p
+        class="center muted"
+        style="
+            font-size:11px;
+            margin-bottom:0;
+        "
+    >
+        New registrations receive Patient access by default.
+    </p>
+
+</section>
+
+{% endblock %}

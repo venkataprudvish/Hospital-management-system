@@ -1,0 +1,294 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        {% block title %}SecureCare HMS{% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    {% if user.is_authenticated %}
+
+        <!-- =================================================
+             AUTHENTICATED SIDEBAR
+             ================================================= -->
+
+        <aside class="sidebar">
+
+            <a class="brand" href="{% url 'dashboard' %}">
+                <span class="brand-mark">✚</span>
+
+                <span class="brand-copy">
+                    <strong>SecureCare</strong>
+                    <small>Hospital Management System</small>
+                </span>
+            </a>
+
+            <div class="sidebar-divider"></div>
+
+            <nav class="main-nav">
+
+                <a class="nav-item" href="{% url 'dashboard' %}">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a class="nav-item" href="{% url 'patient-list' %}">
+                    <span class="nav-icon">♙</span>
+                    <span>Patients</span>
+                </a>
+
+                <a class="nav-item" href="{% url 'doctor-list' %}">
+                    <span class="nav-icon">✚</span>
+                    <span>Doctors</span>
+                </a>
+
+                <a class="nav-item" href="{% url 'appointment-list' %}">
+                    <span class="nav-icon">◷</span>
+                    <span>Appointments</span>
+                </a>
+
+                <a class="nav-item" href="{% url 'billing-list' %}">
+                    <span class="nav-icon">▣</span>
+                    <span>Billing</span>
+                </a>
+
+                {% if user.is_staff %}
+                    <div class="sidebar-section-label">
+                        Administration
+                    </div>
+
+                    <a class="nav-item" href="/admin/">
+                        <span class="nav-icon">⚙</span>
+                        <span>Admin Panel</span>
+                    </a>
+                {% endif %}
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <div class="security-status">
+
+                    <span class="status-dot"></span>
+
+                    <div>
+                        <strong>System protected</strong>
+                        <small>Secure session active</small>
+                    </div>
+
+                </div>
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+
+                    <button
+                        class="logout-button"
+                        type="submit"
+                    >
+                        <span>↪</span>
+                        <span>Sign out</span>
+                    </button>
+                </form>
+
+            </div>
+
+        </aside>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         MAIN AREA
+         ===================================================== -->
+
+    <div class="main-area">
+
+        <!-- =================================================
+             TOPBAR
+             ================================================= -->
+
+        <header class="topbar">
+
+            {% if user.is_authenticated %}
+
+                <div class="topbar-left">
+
+                    <div class="page-context">
+
+                        {% block page_context %}
+
+                            <span class="eyebrow">
+                                SECURECARE HMS
+                            </span>
+
+                            <strong>
+                                Hospital Management System
+                            </strong>
+
+                        {% endblock %}
+
+                    </div>
+
+                </div>
+
+                <div class="topbar-right">
+
+                    <div class="user-chip">
+
+                        <div class="user-avatar">
+
+                            {% if user.first_name %}
+                                {{ user.first_name|first|upper }}
+                            {% else %}
+                                {{ user.username|first|upper }}
+                            {% endif %}
+
+                        </div>
+
+                        <div class="user-details">
+
+                            <strong>
+                                {% if user.get_full_name %}
+                                    {{ user.get_full_name }}
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                            </strong>
+
+                            <small>
+                                {% if user.profile %}
+                                    {{ user.profile.get_role_display }}
+                                {% else %}
+                                    Authenticated User
+                                {% endif %}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <a
+                    class="brand"
+                    href="{% url 'login' %}"
+                    style="color:var(--text);"
+                >
+
+                    <span class="brand-mark">
+                        ✚
+                    </span>
+
+                    <span class="brand-copy">
+
+                        <strong style="color:var(--text);">
+                            SecureCare
+                        </strong>
+
+                        <small style="color:var(--text-muted);">
+                            Hospital Management System
+                        </small>
+
+                    </span>
+
+                </a>
+
+            {% endif %}
+
+        </header>
+
+
+        <!-- =================================================
+             MAIN CONTENT
+             ================================================= -->
+
+        <main class="container">
+
+            {% if messages %}
+
+                <div class="message-stack">
+
+                    {% for message in messages %}
+
+                        <div class="alert {{ message.tags }}">
+
+                            <span class="alert-icon">
+                                ✓
+                            </span>
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+
+        <!-- =================================================
+             FOOTER
+             ================================================= -->
+
+        <footer class="site-footer">
+
+            {% if user.is_authenticated %}
+
+                <span>SecureCare HMS</span>
+
+                <span class="footer-separator">·</span>
+
+                <span>
+                    Security-first hospital management system
+                </span>
+
+                <span class="footer-separator">·</span>
+
+                <span>
+                    Do not use with real clinical data without formal
+                    security/privacy review.
+                </span>
+
+            {% else %}
+
+                <span>SecureCare HMS</span>
+
+                <span class="footer-separator">·</span>
+
+                <span>
+                    Secure healthcare workspace
+                </span>
+
+            {% endif %}
+
+        </footer>
+
+    </div>
+
+</div>
+
+</body>
+</html>

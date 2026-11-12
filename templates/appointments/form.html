@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment · SecureCare{% endblock %}
+
+{% block page_context %}
+    <span class="eyebrow">SCHEDULING</span>
+    <strong>Book Appointment</strong>
+{% endblock %}
+
+{% block content %}
+
+<section class="form-card">
+
+    <div class="eyebrow">
+        APPOINTMENT REQUEST
+    </div>
+
+    <h1>
+        Book appointment
+    </h1>
+
+    <p
+        class="muted"
+        style="margin-top:-12px;margin-bottom:28px;"
+    >
+        Schedule a consultation with an available
+        clinician. Appointment permissions and
+        scheduling conflicts are checked server-side.
+    </p>
+
+
+    {% if form.non_field_errors %}
+
+        <div class="alert error">
+
+            <span class="alert-icon">!</span>
+
+            <div>
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <form method="post" novalidate>
+
+        {% csrf_token %}
+
+
+        {% for field in form %}
+
+            <label>
+
+                <span>
+                    {{ field.label }}
+
+                    {% if field.field.required %}
+                        <span
+                            style="
+                                color:#c83b4d;
+                                margin-left:3px;
+                            "
+                        >
+                            *
+                        </span>
+                    {% endif %}
+                </span>
+
+
+                {{ field }}
+
+
+                {% if field.help_text %}
+
+                    <small
+                        class="muted"
+                        style="
+                            font-size:11px;
+                            font-weight:500;
+                        "
+                    >
+                        {{ field.help_text }}
+                    </small>
+
+                {% endif %}
+
+
+                {% for error in field.errors %}
+
+                    <span class="field-error">
+                        {{ error }}
+                    </span>
+
+                {% endfor %}
+
+            </label>
+
+        {% endfor %}
+
+
+        <div
+            style="
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:15px;
+                margin-top:10px;
+                padding-top:22px;
+                border-top:1px solid #edf1f6;
+            "
+        >
+
+            <span
+                class="muted"
+                style="font-size:11px;"
+            >
+                <span style="color:#c83b4d;">*</span>
+                Required field
+            </span>
+
+
+            <button
+                class="primary"
+                type="submit"
+            >
+                Book appointment
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+<!-- =====================================================
+     SECURITY NOTICE
+     ===================================================== -->
+
+<div
+    class="card"
+    style="
+        max-width:760px;
+        margin:20px auto 0;
+        padding:16px 20px;
+        display:flex;
+        align-items:center;
+        gap:11px;
+    "
+>
+
+    <span
+        style="
+            width:8px;
+            height:8px;
+            border-radius:50%;
+            background:#35c98b;
+            flex-shrink:0;
+        "
+    ></span>
+
+    <p
+        class="muted"
+        style="
+            margin:0;
+            font-size:11px;
+        "
+    >
+        Appointment authorization and doctor time
+        conflicts are validated on the server.
+    </p>
+
+</div>
+
+{% endblock %}

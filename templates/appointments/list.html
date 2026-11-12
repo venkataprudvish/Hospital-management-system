@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments · SecureCare{% endblock %}
+
+{% block page_context %}
+    <span class="eyebrow">SCHEDULING</span>
+    <strong>Appointment Management</strong>
+{% endblock %}
+
+{% block content %}
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<section class="page-head">
+
+    <div>
+
+        <div class="eyebrow">
+            SCHEDULING
+        </div>
+
+        <h1>
+            Appointments
+        </h1>
+
+        <p class="muted">
+            View and manage appointments authorized
+            for your account.
+        </p>
+
+    </div>
+
+
+    <a
+        class="primary link-btn"
+        href="{% url 'book-appointment' %}"
+    >
+        + Book appointment
+    </a>
+
+</section>
+
+
+<!-- =====================================================
+     APPOINTMENT SUMMARY
+     ===================================================== -->
+
+<div class="grid three">
+
+    <div class="stat">
+
+        <span>
+            Visible Appointments
+        </span>
+
+        <strong>
+            {{ appointments|length }}
+        </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+        <span>
+            Access Level
+        </span>
+
+        <strong style="font-size:22px;">
+
+            {% if user.profile %}
+                {{ user.profile.get_role_display }}
+            {% else %}
+                User
+            {% endif %}
+
+        </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+        <span>
+            Scheduling
+        </span>
+
+        <strong style="font-size:22px;">
+            Active
+        </strong>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     APPOINTMENT DIRECTORY
+     ===================================================== -->
+
+<div
+    class="page-head"
+    style="margin-top:36px;margin-bottom:18px;"
+>
+
+    <div>
+
+        <div class="eyebrow">
+            APPOINTMENT DIRECTORY
+        </div>
+
+        <h2 style="margin:6px 0 0;">
+            Scheduled visits
+        </h2>
+
+    </div>
+
+</div>
+
+
+<div class="table-wrap">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Date & time
+                </th>
+
+                <th>
+                    Patient
+                </th>
+
+                <th>
+                    Doctor
+                </th>
+
+                <th>
+                    Reason
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Actions
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for a in appointments %}
+
+                <tr>
+
+                    <!-- DATE -->
+
+                    <td>
+
+                        <strong>
+                            {{ a.date_time|date:"d M Y" }}
+                        </strong>
+
+                        <small
+                            class="muted"
+                            style="
+                                display:block;
+                                margin-top:4px;
+                                font-size:11px;
+                            "
+                        >
+                            {{ a.date_time|date:"H:i" }}
+                        </small>
+
+                    </td>
+
+
+                    <!-- PATIENT -->
+
+                    <td>
+
+                        <strong>
+                            {{ a.patient }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- DOCTOR -->
+
+                    <td>
+
+                        <strong>
+                            {{ a.doctor }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- REASON -->
+
+                    <td>
+
+                        {% if a.reason %}
+
+                            <span>
+                                {{ a.reason }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="muted">
+                                No reason provided
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+                        {% if a.status == "scheduled" %}
+
+                            <span class="pill">
+                                Scheduled
+                            </span>
+
+                        {% elif a.status == "confirmed" %}
+
+                            <span class="pill">
+                                Confirmed
+                            </span>
+
+                        {% elif a.status == "cancelled" %}
+
+                            <span class="pill pill-unavailable">
+                                Cancelled
+                            </span>
+
+                        {% else %}
+
+                            <span class="pill">
+                                {{ a.get_status_display }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="actions">
+
+                            <!-- Confirm -->
+
+                            {% if user.is_superuser or user.profile.role == "owner" or user.profile.role == "admin" or user.profile.role == "nurse" or user.profile.role == "receptionist" or user.doctor_record.id == a.doctor.id %}
+
+                                {% if a.status == "scheduled" %}
+
+                                    <form
+                                        method="post"
+                                        action="{% url 'appointment-status' a.id 'confirmed' %}"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            class="small"
+                                            type="submit"
+                                        >
+                                            Confirm
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            {% endif %}
+
+
+                            <!-- Cancel -->
+
+                            {% if a.status != "cancelled" %}
+
+                                <form
+                                    method="post"
+                                    action="{% url 'appointment-status' a.id 'cancelled' %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        class="small danger-text"
+                                        type="submit"
+                                    >
+                                        Cancel
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+
+                        <div
+                            style="
+                                font-size:34px;
+                                margin-bottom:12px;
+                            "
+                        >
+                            ◷
+                        </div>
+
+                        <strong>
+                            No appointments available
+                        </strong>
+
+                        <p
+                            class="muted"
+                            style="
+                                margin:7px 0 0;
+                            "
+                        >
+                            No appointments are currently
+                            visible for your account.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<!-- =====================================================
+     SECURITY NOTICE
+     ===================================================== -->
+
+<div
+    class="card"
+    style="
+        margin-top:20px;
+        padding:18px 22px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+    "
+>
+
+    <span
+        style="
+            width:9px;
+            height:9px;
+            border-radius:50%;
+            background:#35c98b;
+            flex-shrink:0;
+        "
+    ></span>
+
+    <p
+        class="muted"
+        style="
+            margin:0;
+            font-size:12px;
+        "
+    >
+        Appointment visibility and status changes are
+        validated by the server-side authorization rules.
+    </p>
+
+</div>
+
+{% endblock %}

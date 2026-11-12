@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Doctors · SecureCare{% endblock %}
+
+{% block page_context %}
+    <span class="eyebrow">CLINICAL TEAM</span>
+    <strong>Doctor Management</strong>
+{% endblock %}
+
+{% block content %}
+
+<section class="page-head">
+
+    <div>
+        <div class="eyebrow">CLINICAL TEAM</div>
+
+        <h1>Doctors</h1>
+
+        <p class="muted">
+            View clinicians and their current availability
+            according to your access level.
+        </p>
+    </div>
+
+    {% if user.is_superuser or user.profile.role == "owner" or user.profile.role == "admin" %}
+        <a
+            class="primary link-btn"
+            href="{% url 'doctor-create' %}"
+        >
+            + Add doctor
+        </a>
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     TEAM SUMMARY
+     ===================================================== -->
+
+<div class="grid three">
+
+    <div class="stat">
+        <span>Authorized Doctors</span>
+        <strong>{{ doctors|length }}</strong>
+    </div>
+
+    <div class="stat">
+        <span>Clinical Access</span>
+
+        <strong style="font-size:22px;">
+            {% if user.profile %}
+                {{ user.profile.get_role_display }}
+            {% else %}
+                User
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="stat">
+        <span>Directory Status</span>
+
+        <strong style="font-size:22px;">
+            Active
+        </strong>
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     DOCTOR DIRECTORY
+     ===================================================== -->
+
+<div
+    class="page-head"
+    style="margin-top:36px;margin-bottom:18px;"
+>
+
+    <div>
+        <div class="eyebrow">DIRECTORY</div>
+
+        <h2 style="margin:6px 0 0;">
+            Medical team
+        </h2>
+    </div>
+
+</div>
+
+
+<div class="grid three">
+
+    {% for d in doctors %}
+
+        <article class="doctor-card">
+
+            <!-- Doctor header -->
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:flex-start;
+                    gap:14px;
+                "
+            >
+
+                <div class="avatar">
+                    {{ d.first_name|first|upper }}{{ d.last_name|first|upper }}
+                </div>
+
+                {% if d.is_available %}
+                    <span class="pill">
+                        Available
+                    </span>
+                {% else %}
+                    <span class="pill pill-unavailable">
+                        Unavailable
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- Doctor identity -->
+
+            <h3 style="margin-top:20px;">
+                Dr. {{ d.first_name }} {{ d.last_name }}
+            </h3>
+
+
+            <p
+                class="muted"
+                style="
+                    margin:6px 0 0;
+                    font-weight:700;
+                "
+            >
+                {{ d.specialization }}
+            </p>
+
+
+            <!-- Doctor details -->
+
+            <div
+                style="
+                    margin-top:20px;
+                    padding-top:16px;
+                    border-top:1px solid #edf1f6;
+                "
+            >
+
+                {% if d.room %}
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:12px;
+                        "
+                    >
+
+                        <span
+                            class="muted"
+                            style="font-size:12px;"
+                        >
+                            Consultation room
+                        </span>
+
+                        <strong>
+                            {{ d.room }}
+                        </strong>
+
+                    </div>
+
+                {% else %}
+
+                    <span
+                        class="muted"
+                        style="font-size:12px;"
+                    >
+                        Consultation room not assigned
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </article>
+
+    {% empty %}
+
+        <div
+            class="card"
+            style="
+                grid-column:1/-1;
+                padding:45px;
+                text-align:center;
+            "
+        >
+
+            <div
+                style="
+                    font-size:34px;
+                    margin-bottom:12px;
+                "
+            >
+                ✚
+            </div>
+
+            <h3>
+                No doctors available
+            </h3>
+
+            <p
+                class="muted"
+                style="margin-bottom:0;"
+            >
+                No clinicians are currently available
+                for your account.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+<!-- =====================================================
+     SECURITY NOTICE
+     ===================================================== -->
+
+<div
+    class="card"
+    style="
+        margin-top:20px;
+        padding:18px 22px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+    "
+>
+
+    <span
+        style="
+            width:9px;
+            height:9px;
+            border-radius:50%;
+            background:#35c98b;
+            flex-shrink:0;
+        "
+    ></span>
+
+    <p
+        class="muted"
+        style="
+            margin:0;
+            font-size:12px;
+        "
+    >
+        Doctor visibility is controlled by the server-side
+        access rules for your account.
+    </p>
+
+</div>
+
+{% endblock %}

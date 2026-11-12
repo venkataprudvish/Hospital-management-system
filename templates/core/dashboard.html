@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard · SecureCare{% endblock %}
+
+{% block page_context %}
+<span class="eyebrow">SECURECARE HMS</span>
+<strong>Clinical Operations Dashboard</strong>
+{% endblock %}
+
+{% block content %}
+
+<!-- =====================================================
+     DASHBOARD HERO
+     ===================================================== -->
+
+<section class="hero">
+
+    <div>
+        <div class="eyebrow">
+            {% if profile %}
+                {{ profile.get_role_display|upper }}
+            {% else %}
+                SECURECARE HMS
+            {% endif %}
+        </div>
+
+        <h1>
+            Good to see you,
+            {{ user.first_name|default:user.username }}.
+        </h1>
+
+        <p>
+            Manage authorized healthcare operations,
+            patient records, appointments and billing
+            from one secure workspace.
+        </p>
+    </div>
+
+    <div class="security-badge">
+        <span>● Protected session</span>
+
+        <small>
+            Server-side authorization enabled
+        </small>
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     OVERVIEW
+     ===================================================== -->
+
+<div class="page-head" style="margin-top: 34px;">
+
+    <div>
+        <div class="eyebrow">
+            OVERVIEW
+        </div>
+
+        <h1>
+            Today's workspace
+        </h1>
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADMIN / STAFF STATISTICS
+     ===================================================== -->
+
+{% if patient_count is not None %}
+
+<div class="grid four">
+
+    <div class="stat">
+        <span>Registered Patients</span>
+        <strong>{{ patient_count }}</strong>
+    </div>
+
+    <div class="stat">
+        <span>Medical Staff</span>
+        <strong>{{ doctor_count }}</strong>
+    </div>
+
+    <div class="stat">
+        <span>Appointments</span>
+        <strong>{{ appointment_count }}</strong>
+    </div>
+
+    <div class="stat">
+        <span>Pending Bills</span>
+        <strong>{{ pending_bills }}</strong>
+    </div>
+
+</div>
+
+{% else %}
+
+<!-- =====================================================
+     PATIENT / DOCTOR STATISTICS
+     ===================================================== -->
+
+<div class="grid two">
+
+    <div class="stat">
+        <span>Your Appointments</span>
+        <strong>{{ appointment_count|default:0 }}</strong>
+    </div>
+
+    <div class="stat">
+        <span>Pending Bills</span>
+        <strong>{{ pending_bills|default:0 }}</strong>
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<!-- =====================================================
+     QUICK ACCESS
+     ===================================================== -->
+
+<div class="page-head" style="margin-top: 38px;">
+
+    <div>
+        <div class="eyebrow">
+            QUICK ACCESS
+        </div>
+
+        <h1>
+            Manage your workspace
+        </h1>
+    </div>
+
+</div>
+
+
+<div class="grid three">
+
+    <a
+        class="action-card"
+        href="{% url 'appointment-list' %}"
+    >
+        <span>01 · CARE</span>
+
+        <h3>
+            Appointments
+        </h3>
+
+        <p>
+            View and manage appointments
+            permitted by your role.
+        </p>
+    </a>
+
+
+    <a
+        class="action-card"
+        href="{% url 'patient-list' %}"
+    >
+        <span>02 · RECORDS</span>
+
+        <h3>
+            Patient Records
+        </h3>
+
+        <p>
+            Access patient information
+            according to your authorization.
+        </p>
+    </a>
+
+
+    <a
+        class="action-card"
+        href="{% url 'billing-list' %}"
+    >
+        <span>03 · FINANCE</span>
+
+        <h3>
+            Billing
+        </h3>
+
+        <p>
+            Review authorized invoices,
+            payments and billing activity.
+        </p>
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     SYSTEM STATUS
+     ===================================================== -->
+
+<div class="grid two" style="margin-top: 20px;">
+
+    <div class="card" style="padding: 24px;">
+
+        <div class="eyebrow">
+            SYSTEM STATUS
+        </div>
+
+        <h3 style="margin: 10px 0 8px;">
+            SecureCare is operational
+        </h3>
+
+        <p class="muted" style="margin: 0;">
+            Your current session is protected by
+            server-side authentication and role-based
+            authorization.
+        </p>
+
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin-top:18px;
+            color:#18845a;
+            font-size:12px;
+            font-weight:800;
+        ">
+            <span
+                style="
+                    width:8px;
+                    height:8px;
+                    border-radius:50%;
+                    background:#35c98b;
+                    display:inline-block;
+                "
+            ></span>
+
+            Security controls active
+        </div>
+
+    </div>
+
+
+    <div class="card" style="padding: 24px;">
+
+        <div class="eyebrow">
+            YOUR ACCESS
+        </div>
+
+        <h3 style="margin: 10px 0 8px;">
+            {{ profile.get_role_display|default:"Authenticated User" }}
+        </h3>
+
+        <p class="muted" style="margin: 0;">
+            Your dashboard and available records are
+            determined by your assigned access role.
+        </p>
+
+        <div style="margin-top:18px;">
+            <span class="pill">
+                AUTHORIZED SESSION
+            </span>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

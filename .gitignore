@@ -1,0 +1,43 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local databases and backups (never commit real user/patient data)
+*.sqlite3
+*.db
+*.sqlite3-journal
+*.bak
+*.backup
+
+# Generated static files
+staticfiles/
+
+# User uploads / runtime data
+media/
+uploads/
+
+# IDE and editor settings
+.idea/
+.vscode/
+
+# Logs, coverage, test caches
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db

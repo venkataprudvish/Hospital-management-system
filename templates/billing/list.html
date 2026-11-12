@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}Billing · SecureCare{% endblock %}
+
+{% block page_context %}
+    <span class="eyebrow">FINANCE</span>
+    <strong>Billing Management</strong>
+{% endblock %}
+
+{% block content %}
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<section class="page-head">
+
+    <div>
+
+        <div class="eyebrow">
+            FINANCE
+        </div>
+
+        <h1>
+            Billing
+        </h1>
+
+        <p class="muted">
+            Review billing records and authorized payment
+            activity for your account.
+        </p>
+
+    </div>
+
+
+    {% if user.is_superuser or user.profile.role == "owner" or user.profile.role == "admin" or user.profile.role == "nurse" or user.profile.role == "receptionist" or user.profile.role == "accountant" %}
+
+        <a
+            class="primary link-btn"
+            href="{% url 'bill-create' %}"
+        >
+            + Create invoice
+        </a>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     BILLING SUMMARY
+     ===================================================== -->
+
+<div class="grid three">
+
+    <div class="stat">
+
+        <span>
+            Visible Invoices
+        </span>
+
+        <strong>
+            {{ bills|length }}
+        </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+        <span>
+            Access Level
+        </span>
+
+        <strong style="font-size:22px;">
+
+            {% if user.profile %}
+                {{ user.profile.get_role_display }}
+            {% else %}
+                User
+            {% endif %}
+
+        </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+        <span>
+            Billing System
+        </span>
+
+        <strong style="font-size:22px;">
+            Active
+        </strong>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BILLING DIRECTORY
+     ===================================================== -->
+
+<div
+    class="page-head"
+    style="margin-top:36px;margin-bottom:18px;"
+>
+
+    <div>
+
+        <div class="eyebrow">
+            FINANCIAL RECORDS
+        </div>
+
+        <h2 style="margin:6px 0 0;">
+            Invoices
+        </h2>
+
+    </div>
+
+</div>
+
+
+<div class="table-wrap">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Invoice
+                </th>
+
+                <th>
+                    Patient
+                </th>
+
+                <th>
+                    Description
+                </th>
+
+                <th>
+                    Amount
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for b in bills %}
+
+                <tr>
+
+                    <!-- INVOICE -->
+
+                    <td>
+
+                        <strong>
+                            #{{ b.id }}
+                        </strong>
+
+                        <small
+                            class="muted"
+                            style="
+                                display:block;
+                                margin-top:4px;
+                                font-size:10px;
+                            "
+                        >
+                            Billing record
+                        </small>
+
+                    </td>
+
+
+                    <!-- PATIENT -->
+
+                    <td>
+                        <strong>
+                            {{ b.patient }}
+                        </strong>
+                    </td>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <td>
+
+                        {% if b.description %}
+
+                            {{ b.description }}
+
+                        {% else %}
+
+                            <span class="muted">
+                                No description
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- AMOUNT -->
+
+                    <td>
+
+                        <strong>
+                            ₹{{ b.amount }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+                        {% if b.status == "paid" %}
+
+                            <span class="pill">
+                                Paid
+                            </span>
+
+                        {% elif b.status == "pending" %}
+
+                            <span class="pill">
+                                Pending
+                            </span>
+
+                        {% else %}
+
+                            <span class="pill">
+                                {{ b.get_status_display }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACTION -->
+
+                    <td>
+
+                        {% if b.status == "pending" %}
+
+                            {% if user.is_superuser or user.profile.role == "owner" or user.profile.role == "admin" or user.profile.role == "nurse" or user.profile.role == "receptionist" or user.profile.role == "accountant" %}
+
+                                <form
+                                    method="post"
+                                    action="{% url 'bill-pay' b.id %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        class="small"
+                                        type="submit"
+                                    >
+                                        Mark paid
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+
+                        <div
+                            style="
+                                font-size:34px;
+                                margin-bottom:12px;
+                            "
+                        >
+                            ₹
+                        </div>
+
+                        <strong>
+                            No billing records available
+                        </strong>
+
+                        <p
+                            class="muted"
+                            style="
+                                margin:7px 0 0;
+                            "
+                        >
+                            Billing records authorized for your
+                            account will appear here.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<!-- =====================================================
+     SECURITY NOTICE
+     ===================================================== -->
+
+<div
+    class="card"
+    style="
+        margin-top:20px;
+        padding:18px 22px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+    "
+>
+
+    <span
+        style="
+            width:9px;
+            height:9px;
+            border-radius:50%;
+            background:#35c98b;
+            flex-shrink:0;
+        "
+    ></span>
+
+    <p
+        class="muted"
+        style="
+            margin:0;
+            font-size:12px;
+        "
+    >
+        Billing visibility and payment operations are
+        protected by server-side authorization.
+    </p>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In · SecureCare{% endblock %}
+
+{% block page_context %}
+    <span class="eyebrow">SECURITY</span>
+    <strong>Secure Sign In</strong>
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-card">
+
+    <div class="eyebrow">
+        SECURE ACCESS
+    </div>
+
+    <h1>
+        Welcome back
+    </h1>
+
+    <p class="muted">
+        Sign in to your healthcare workspace.
+    </p>
+
+
+    {% if form.non_field_errors %}
+
+        <div class="alert error">
+
+            <div>
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <form
+        method="post"
+        novalidate
+        autocomplete="off"
+        id="login-form"
+    >
+
+        {% csrf_token %}
+
+
+        <label>
+
+            <span>
+                {{ form.identifier.label }}
+            </span>
+
+            {{ form.identifier }}
+
+            {% for error in form.identifier.errors %}
+
+                <span class="field-error">
+                    {{ error }}
+                </span>
+
+            {% endfor %}
+
+        </label>
+
+
+        <label>
+
+            <span>
+                {{ form.password.label }}
+            </span>
+
+            {{ form.password }}
+
+            {% for error in form.password.errors %}
+
+                <span class="field-error">
+                    {{ error }}
+                </span>
+
+            {% endfor %}
+
+        </label>
+
+
+        <button
+            class="primary"
+            type="submit"
+        >
+            Sign in
+        </button>
+
+    </form>
+
+
+    <div
+        style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin:24px 0;
+        "
+    >
+
+        <div
+            style="
+                height:1px;
+                background:#e4eaf3;
+                flex:1;
+            "
+        ></div>
+
+        <span
+            style="
+                font-size:10px;
+                font-weight:900;
+                letter-spacing:.08em;
+                color:#8a96aa;
+            "
+        >
+            SECURECARE
+        </span>
+
+        <div
+            style="
+                height:1px;
+                background:#e4eaf3;
+                flex:1;
+            "
+        ></div>
+
+    </div>
+
+
+    <p class="center">
+        New here?
+
+        <a href="{% url 'register' %}">
+            Create an account
+        </a>
+    </p>
+
+</section>
+
+
+<script>
+(function () {
+    const form = document.getElementById("login-form");
+
+    if (!form) {
+        return;
+    }
+
+    function clearLoginFields() {
+        const identifier = form.querySelector(
+            '[name="identifier"]'
+        );
+
+        const password = form.querySelector(
+            '[name="password"]'
+        );
+
+        if (identifier) {
+            identifier.value = "";
+        }
+
+        if (password) {
+            password.value = "";
+        }
+    }
+
+    window.addEventListener("pageshow", function () {
+        clearLoginFields();
+    });
+})();
+</script>
+
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Patients · SecureCare{% endblock %}
+
+{% block page_context %}
+    <span class="eyebrow">RECORDS</span>
+    <strong>Patient Management</strong>
+{% endblock %}
+
+{% block content %}
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<section class="page-head">
+
+    <div>
+        <div class="eyebrow">
+            PATIENT RECORDS
+        </div>
+
+        <h1>
+            Patients
+        </h1>
+
+        <p class="muted">
+            View patient records authorized for your role.
+        </p>
+    </div>
+
+    {% if user.is_superuser or user.profile.role == "owner" or user.profile.role == "admin" or user.profile.role == "nurse" or user.profile.role == "receptionist" %}
+
+        <a
+            class="primary link-btn"
+            href="{% url 'patient-create' %}"
+        >
+            + Add patient
+        </a>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     RECORD SUMMARY
+     ===================================================== -->
+
+<div class="grid three">
+
+    <div class="stat">
+        <span>Authorized Records</span>
+        <strong>{{ patients|length }}</strong>
+    </div>
+
+    <div class="stat">
+        <span>Access Level</span>
+        <strong style="font-size:22px;">
+            {% if user.profile %}
+                {{ user.profile.get_role_display }}
+            {% else %}
+                User
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="stat">
+        <span>Data Protection</span>
+        <strong style="font-size:22px;">
+            Active
+        </strong>
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PATIENT TABLE
+     ===================================================== -->
+
+<div
+    class="page-head"
+    style="margin-top:36px;margin-bottom:18px;"
+>
+
+    <div>
+        <div class="eyebrow">
+            DIRECTORY
+        </div>
+
+        <h2 style="margin:6px 0 0;">
+            Patient directory
+        </h2>
+    </div>
+
+</div>
+
+
+<div class="table-wrap">
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Patient</th>
+                <th>Date of birth</th>
+                <th>Gender</th>
+                <th>Contact</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for p in patients %}
+
+                <tr>
+
+                    <td>
+
+                        <div
+                            style="
+                                display:flex;
+                                align-items:center;
+                                gap:12px;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    width:42px;
+                                    height:42px;
+                                    border-radius:12px;
+                                    display:grid;
+                                    place-items:center;
+                                    background:#eaf0ff;
+                                    color:#4357c8;
+                                    font-weight:900;
+                                    flex-shrink:0;
+                                "
+                            >
+                                {{ p.first_name|first|upper }}{{ p.last_name|first|upper }}
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    {{ p.first_name }} {{ p.last_name }}
+                                </strong>
+
+                                <small
+                                    class="muted"
+                                    style="
+                                        display:block;
+                                        margin-top:3px;
+                                        font-size:11px;
+                                    "
+                                >
+                                    Patient record
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        {{ p.date_of_birth|default:"—" }}
+                    </td>
+
+
+                    <td>
+
+                        {% if p.gender %}
+
+                            <span class="pill">
+                                {{ p.gender }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="muted">
+                                —
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ p.contact_number|default:"—" }}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="empty"
+                    >
+
+                        <div style="font-size:30px;margin-bottom:10px;">
+                            ♙
+                        </div>
+
+                        <strong>
+                            No authorized patient records
+                        </strong>
+
+                        <div
+                            class="muted"
+                            style="margin-top:6px;"
+                        >
+                            Patient records available to your account
+                            will appear here.
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<!-- =====================================================
+     SECURITY NOTICE
+     ===================================================== -->
+
+<div
+    class="card"
+    style="
+        margin-top:20px;
+        padding:18px 22px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+    "
+>
+
+    <span
+        style="
+            width:9px;
+            height:9px;
+            border-radius:50%;
+            background:#35c98b;
+            flex-shrink:0;
+        "
+    ></span>
+
+    <p
+        class="muted"
+        style="margin:0;font-size:12px;"
+    >
+        Patient visibility is restricted by server-side
+        role authorization. Only records permitted for the
+        current account are returned.
+    </p>
+
+</div>
+
+{% endblock %}
